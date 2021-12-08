@@ -1,6 +1,12 @@
+#![allow(dead_code)]
+
+use std::borrow::Borrow;
+// use core::num::fmt::Part::Num;
 use std::fs::File;
 use std::io::Read;
 use std::str::FromStr;
+
+
 
 type Num = i64;
 
@@ -9,8 +15,16 @@ fn cost_of(crabs: &Vec<Num>, target: Num) -> Num {
     for c in crabs {
         cost += Num::abs(c - target)
     }
-
     cost
+}
+
+// Num is an alias of i64
+fn cost_of_reduce(crabs: &Vec<Num>, target: Num) -> Num {
+    crabs.iter()
+        .map(|x| {*x})
+        .reduce(|acc, c| {
+            acc + Num::abs(c - target)
+    }).unwrap()
 }
 
 fn cost_of_2(crabs: &Vec<Num>, target: Num) -> Num {
@@ -20,7 +34,6 @@ fn cost_of_2(crabs: &Vec<Num>, target: Num) -> Num {
         let thing = (distance * (distance + 1)) / 2;
         cost += thing;
     }
-
     cost
 }
 
@@ -29,7 +42,7 @@ fn calc1(crabs: Vec<Num>) -> Option<()> {
     let mut min = Num::MAX;
     let max_pos = crabs.iter().max().or(Option::None)?;
     for p in 0..=*max_pos {
-        let cost = cost_of(&crabs, p);
+        let cost = cost_of_reduce(&crabs, p);
         if cost < min {
             min = cost;
         }
@@ -60,7 +73,7 @@ fn main() -> std::io::Result<()> {
     let raw_crabs: Vec<Num> = stuff.split(",").map(|x|{Num::from_str(x).unwrap()}).collect();
     // let n = raw_crabs.iter().max().ok_or(0);
     // println!("{:#?}", n);
-    calc2(raw_crabs);
+    calc1(raw_crabs);
 
     Ok(())
 }
